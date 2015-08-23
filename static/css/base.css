@@ -1,0 +1,141 @@
+/** general *****************************************************************/
+
+body {
+    padding-top: 55px;
+    background-image: url(/static/img/bg.png);
+    background-position: left 40px;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-color: #c0deed;
+}
+
+.color-twitter-bird {
+    color: #00aced;
+}
+
+.twitter-gray {
+    color: rgb(105, 120, 130);
+}
+
+/** Jumbotron ***************************************************************/
+
+.jumbotron {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.jumbotron h1 {
+    font-size: 2.3em;
+    letter-spacing: -1px;
+    font-weight: 700;
+}
+
+@media (min-width: 768px) {
+    .jumbotron h1 {
+        font-size: 3.0em;
+    }
+}
+
+/* スマホ時もフォームを横並びに */
+.form-inline .form-group {
+    display: inline-block;
+}
+
+/* フォームが複数行になった時の余白を確保 */
+.form-inline .form-group, .form-inline button {
+    margin-bottom: 4px;
+}
+
+/* 詳細設定フォームは非表示 */
+.settings {
+    display: none;
+}
+
+/* フォーム下のリンク */
+.settings-links {
+    margin-top: 4px;
+}
+
+
+/** About *******************************************************************/
+
+#about .panel {
+    opacity: .8;
+}
+
+@media(min-width: 992px) {
+    #about {
+        width: 760px;
+    }
+}
+
+
+/** Social Buttons **********************************************************/
+
+/* 横並び表示 */
+
+#social-buttons>ul {
+    overflow: hidden;
+    width: 283px;
+}
+
+#social-buttons li {
+    float: left;
+    margin-right: 4px;
+}
+
+/** Adsense *****************************************************************/
+
+.ads-responsive {
+    width: 300px;
+    height: 250px;
+}
+
+@media(min-width: 729px) {
+    .ads-responsive {
+        width: 728px;
+        height: 90px;
+    }
+}
+
+/** Footer ******************************************************************/
+
+footer {
+    margin-top: 8px;
+}
+
+/** Modal *******************************************************************/
+
+/* Tweet Panel */
+
+/* ツイートのヘッダ */
+#panel-tweet .media {
+    color: #000;
+}
+
+    #panel-tweet .media:hover {
+        text-decoration: none;
+    }
+
+/* 名前 */
+#panel-tweet h4 {
+    font-weight:700;
+}
+
+    #panel-tweet h4:hover {
+        color: rgb(59, 148, 217);
+    }
+
+/* 日時 */
+#panel-tweet .time {
+    font-size: .9em;
+}
+
+#panel-tweet p {
+    margin: 8px 0 0;
+}
+
+/* モーダルに表示するボタン群 */
+
+.modal-button-box button {
+    margin: 4px;
+}

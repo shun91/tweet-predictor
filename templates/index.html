@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# website: http://ogp.me/ns/website#">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="keywords" content="twitter,アプリ,予測器">
+  <meta name="description" content="指定したTwitterユーザが呟きそうなツイートを自動生成するサービスです．">
+  <link rel="canonical" href="https://tweet-predictor.herokuapp.com/">
+  <link rel="shortcut icon" href="/static/img/favicon.ico">
+  <link href="https://bootswatch.com/flatly/bootstrap.min.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/base.css') }}" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <title>Tweet Predictor | あなたのツイートを予測します</title>
+
+  <!-- Facebook -->
+  <meta property="og:title" content="Tweet Predictor | あなたのツイートを予測します">
+  <meta property="og:url" content="https://tweet-predictor.herokuapp.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://tweet-predictor.herokuapp.com/static/img/thumbnail.jpg">
+  <meta property="og:site_name" content="Tweet Predictor | あなたのツイートを予測します">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:description" content="指定したTwitterユーザが呟きそうなツイートを自動生成するサービスです．" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+
+</head>
+<body>
+
+<!-- Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-46917278-9', 'auto');
+  ga('send', 'pageview');
+</script>
+
+<!-- Header -->
+<header>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/"><i class="fa fa-twitter color-twitter-bird"></i>&ensp;Tweet Predictor</a>
+      </div><!-- /.navbar-header -->
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="{{ url_for('static', filename='update.txt') }}" target="_blank">Ver.1.1.0.</a></li>
+          <li>
+            <a href="https://github.com/shun91/tweet-predictor" target="_blank">GitHub</a>
+          </li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">References <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="http://d.hatena.ne.jp/n_shuyo/touch/20130723/knerser" target="_blank">Kneser-Ney スムージングによる文書生成</a></li>
+              <li><a href="http://qiita.com/kounoike/items/6fc31fe051e5d688f136" target="_blank">続いてはPython（Flask）でHeroku! - Qiita</a></li>
+              <li><a href="http://www.kabipan.com/computer/twitter/" target="_blank">python で twitter メモ</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+  </nav>
+</header>
+
+<!-- Jumbotron -->
+<div class="jumbotron">
+  <div class="container text-center">
+    <h1>あなたのツイートを予測します</h1>
+    <form class="form-inline" role="form" name="form" onsubmit="return false;">
+      <div class="form-group">
+        <label class="sr-only" for="screen_name">@screen_name</label>
+        <input type="text" name="screen_name" id="screen_name" placeholder="@screen_name" value="{{screen_name}}" class="form-control">
+      </div><!-- /.form-group -->
+      <div class="settings">
+        <div class="form-group">
+          <label class="sr-only" for="n">n</label>
+          <input type="number" name="n" id="n" placeholder="何gram? (半角数字)" class="form-control">
+        </div><!-- /.form-group -->
+      </div><!-- /.settings -->
+      <button class="btn btn-primary btn-predict">
+        <i class="fa fa-paper-plane"></i>&ensp;Predict
+      </button>
+      <div class="settings-links">
+        <a id="toggle_settings">[詳細設定]</a>&ensp;<a href="{{ redirect_url }}">[連携アプリ認証]</a>
+      </div>
+      <input type="hidden" name="access_token" id="access_token" value="{{access_token}}">
+      <input type="hidden" name="access_token_secret" id="access_token_secret" value="{{access_token_secret}}">
+    </form>
+  </div><!-- /.container .text-center -->
+</div><!-- /.jumbotron -->
+
+<!-- About -->
+<section class="container" id="about">
+ <div class="row">
+  <div class="col-xs-12">
+   <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">このサービスについて</h3>
+    </div><!-- /.panel-heading -->
+    <div class="panel-body">
+      <ul>
+        <li>指定したユーザが呟きそうなツイートを自動生成するサービスです．</li>
+        <li>過去のツイートを1000件以上に渡り解析することで，その人っぽいツイートを生成しています．</li>
+        <li><code>screen_name</code> とは，@ から始まる Twitter における ID のようなものです．(例：<a href="https://twitter.com/ariyoshihiroiki">@ariyoshihiroiki</a>)</li>
+        <li>鍵アカで利用するには，「<a href="{{ redirect_url }}">連携アプリ認証</a>」を行って下さい．</li>
+        <li>意味不明なツイートを吐くこともありますが仕様です．（改善案お待ちしております）</li>
+        <li>日本語にしか対応していません．</li>
+        <li>
+          詳細設定について（自然言語処理を知っている方向け）
+          <ul>
+            <li>何gram言語モデルを使うかを指定できます．一般に，大きくするほど精度があがる…というか元のツイートが表示されやすくなります．</li>
+            <li>ちなみに文字Ngramを使用しています．（本サービスでは文字Ngramの方が精度が良いみたいです）</li>
+          </ul>
+        </li>
+      </ul>
+    </div><!-- /.panel-body -->
+   </div><!-- /.panel .panel-default -->
+  </div><!-- /.col-xs-12 -->
+ </div><!-- /.row -->
+</section>
+
+<!-- Social Buttons -->
+<section class="container" id="social-buttons">
+  <ul class="list-unstyled center-block">
+    <li>
+      <a href="http://b.hatena.ne.jp/entry/" class="hatena-bookmark-button" data-hatena-bookmark-layout="vertical-balloon" data-hatena-bookmark-lang="ja" title="このエントリーをはてなブックマークに追加">
+        <img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;">
+      </a>
+      <script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+    </li>
+    <li>
+      <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical" data-lang="ja">ツイート</a>
+      <script>
+        !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
+      </script>
+    </li>
+    <li>
+      <div id="fb-root"></div>
+      <script>(function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s); js.id = id;
+        js.src = "//connect.facebook.net/ja_JP/sdk.js#xfbml=1&version=v2.4&appId=208129695948521";
+        fjs.parentNode.insertBefore(js, fjs);
+      }(document, 'script', 'facebook-jssdk'));</script>
+      <div class="fb-like" data-layout="box_count" data-action="like" data-show-faces="false" data-share="false"></div>
+    </li>
+    <li>
+      <script src="https://apis.google.com/js/platform.js" async defer>
+        {lang: 'ja'}
+      </script>
+      <div class="g-plusone" data-size="tall"></div>
+    </li>
+  </ul>
+</section>
+
+<!-- Adsense -->
+<section class="container">
+  <div class="ads-responsive center-block">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!-- tweet-predictor -->
+    <ins class="adsbygoogle ads-responsive"
+         style="display:block"
+         data-ad-client="ca-pub-4408505087553412"
+         data-ad-slot="1190191740"
+         data-ad-format="auto"></ins>
+    <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="container text-center">
+  <p>
+    Tweet Predictor is created by <a href="https://github.com/shun91">shun91</a>.
+  </p>
+</footer>
+
+<!-- Modal -->
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel"></h4>
+      </div><!-- /.modal-header -->
+      <div class="modal-body"></div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- CSS, JS -->
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+</html>
