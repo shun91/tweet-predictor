@@ -113,7 +113,7 @@ def predict(screen_name='ariyosihiroiki', n=N_DEFAULT, access_token='', access_t
 
     # ツイート生成に必要なインスタンス等
     numpy.random.seed()
-    D = DISCOUNT # discount
+    D = DISCOUNT  # discount
     ngram = NGram(int(n))
     gen = Generator(ngram)
 
@@ -125,7 +125,12 @@ def predict(screen_name='ariyosihiroiki', n=N_DEFAULT, access_token='', access_t
     # 1件も取得できなかった場合
     if len(timeline_texts) == 0:
         return_json = {
-            'error_msg': 'ツイートを取得できませんでした．screen_name が正しいかどうか確認して下さい．'}
+            'error_msg': '''
+            ツイートを取得できませんでした．
+            <ul>
+            <li>screen_name が正しいかどうか確認して下さい．</li>
+            <li>鍵アカの場合は「連携アプリ認証」を行う必要があります。</li>
+            </ul>'''}
         return json.dumps(return_json)  # 1文だけ返す
 
     # ツイートの前処理
