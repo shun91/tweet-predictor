@@ -140,14 +140,20 @@ def predict(screen_name='ariyosihiroiki', n=N_DEFAULT, access_token='', access_t
     charNgram(gen, timeline_texts)
 
     # 新たなツイートを生成
+    created = False
     st = START
-    for i in xrange(1000):
-        voca, prob = ngram.probKN(D, st)
-        i = numpy.random.multinomial(1, prob).argmax()
-        v = voca[i]
-        if v == END:
-            break
-        st += v
+    while(created == False):
+        for i in xrange(1000):
+            voca, prob = ngram.probKN(D, st)
+            i = numpy.random.multinomial(1, prob).argmax()
+            v = voca[i] # voca[i], prob[i] が次に最も続く確率が高い文字とその確率
+            if v == END:
+                break
+            st += v
+        # 文字数が1以上140以下でなければ生成し直す
+        length = len(st[1:])
+        if (0 < length) and (length < 141):
+            created = True
 
     # screen_name など Tweet の表示に利用する要素の取得
     screen_name, name, profile_image_url_https = twitter.get_user(
