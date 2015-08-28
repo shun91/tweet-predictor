@@ -11,7 +11,7 @@ import json
 import tweepy
 import logging
 import time
-from flask import session, request
+from flask import session
 
 # Consumer Key
 CONSUMER_KEY = os.environ['CONSUMER_KEY']
@@ -29,18 +29,8 @@ class Twitter(object):
         self.auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET,
                                         CALLBACK_URL)
 
-    def pop_request_token_from_session(self):
-        """ request_token を取得して session から削除 """
-        return session.pop('request_token', None)
-
-    def get_access_token(self):
+    def get_access_token(self, token, verifier):
         """ 認証済みユーザの access_token, screen_name を取得 """
-        # 取得に必要な値を取り出し．なければ空文字列を返す．
-        token = self.pop_request_token_from_session()
-        verifier = request.args.get('oauth_verifier')
-        if (token is None) or (verifier is None):
-            return ('', '', '')
-
         # access_token, screen_name を取得して返す．
         self.auth.request_token = token
         try:

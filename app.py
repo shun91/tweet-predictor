@@ -6,7 +6,7 @@ Tweet Predictor の本体．
 import os
 import sys
 import logging
-from flask import Flask, redirect, request, render_template
+from flask import Flask, redirect, request, session, render_template
 from flask_sslify import SSLify
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/py')
 import twitter_api
@@ -25,12 +25,10 @@ app.secret_key = os.environ['SECRET_KEY']
 def index():
     """ root ページの表示 """
     # 必要情報を Twitter API から取得
-    twitter = twitter_api.Twitter()
-    access_token, access_token_secret, screen_name = twitter.get_access_token()
-    redirect_url = twitter.get_authorization_url()
+    access_token, access_token_secret, screen_name = get_access_token()
 
     # レンダリング
-    return render_template('index.html', redirect_url=redirect_url,
+    return render_template('index.html',
                            access_token=access_token,
                            access_token_secret=access_token_secret,
                            screen_name=screen_name)
@@ -58,3 +56,29 @@ def predict():
     predicted_tweet = knlm.predict(
         screen_name, n, access_token, access_token_secret)
     return predicted_tweet
+
+
+@app.route('/twitter_auth', methods=['GET'])
+def twitter_auth():
+    """ 認証用URLにリダイレクト """
+    # 必要情報を Twitter API から取得
+    twitter = twitter_api.Twitter()
+    redirect_url = twitter.get_authorization_url()
+
+    return redirect(redirect_url)
+
+
+def get_access_token():
+    """ 認証済みユーザであれば access_token, screen_name を返す """
+    # request_token を取得して session から削除
+    token = session.pop('request_token', None)
+    if token is None:
+        return ('', '', '')
+
+    # URLパラメータから oauth_verifier を取得
+    verifier = request.args.get('oauth_verifier')
+    if verifier is None:
+        return ('', '', '')
+
+    twitter = twitter_api.Twitter()
+    return twitter.get_access_token(token, verifier)

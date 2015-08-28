@@ -88,7 +88,7 @@
         <i class="fa fa-paper-plane"></i>&ensp;Predict
       </button>
       <div class="settings-links">
-        <a id="toggle_settings">[詳細設定]</a>&ensp;<a href="{{ redirect_url }}">[連携アプリ認証]</a>
+        <a id="toggle_settings">[詳細設定]</a>&ensp;<a href="{{ url_for('twitter_auth') }}">[連携アプリ認証]</a>
       </div>
       <input type="hidden" name="access_token" id="access_token" value="{{access_token}}">
       <input type="hidden" name="access_token_secret" id="access_token_secret" value="{{access_token_secret}}">
@@ -109,7 +109,7 @@
         <li>指定したユーザが呟きそうなツイートを自動生成するサービスです．</li>
         <li>過去のツイートを1000件以上に渡り解析することで，その人っぽいツイートを生成しています．</li>
         <li><code>screen_name</code> とは，@ から始まる Twitter における ID のようなものです．(例：<a href="https://twitter.com/ariyoshihiroiki">@ariyoshihiroiki</a>)</li>
-        <li>鍵アカで利用するには，「<a href="{{ redirect_url }}">連携アプリ認証</a>」を行って下さい．</li>
+        <li>鍵アカで利用するには，「<a href="{{ url_for('twitter_auth') }}">連携アプリ認証</a>」を行って下さい．</li>
         <li>意味不明なツイートを吐くこともありますが仕様です．（改善案お待ちしております）</li>
         <li>日本語にしか対応していません．</li>
         <li>
